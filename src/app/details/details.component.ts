@@ -12,7 +12,7 @@ import {
 import { first, last } from "rxjs";
 
 /** set attribute to value <form [formGroup]="applyForm"
- * then set event handler for submit to function  (submit)="submitApplication()" 
+ * then set event handler for submit to function  (submit)="submitApplication()"
  * Use parentheses around the event name to define events in template code
  * the code on the right hand is the function to call when the event is triggered
  */
@@ -74,8 +74,11 @@ export class DetailsComponent {
 
   constructor() {
     this.housingLocationId = Number(this.route.snapshot.params["id"]);
+    this.loadHousingLocation();
+  }
 
-    this.housingLocation = this.housingService.getHousingLocationById(
+  async loadHousingLocation() {
+    this.housingLocation = await this.housingService.getHousingLocationById(
       this.housingLocationId
     );
   }
