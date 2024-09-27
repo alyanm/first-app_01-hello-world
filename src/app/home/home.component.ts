@@ -6,6 +6,8 @@ import { HousingService } from "../housing.service";
 
 /** data binding -- [housingLocation]="housingLocation"  binds the property as input to the component. */
 /** use ngFor to iterate over a list */
+/** Use template reference variable #filter to get access to the input element as its value */
+/** Bind the click event on the button element to the filterResults function passing the value property of thefilter template variable */
 @Component({
   selector: "app-home",
   standalone: true,
@@ -13,13 +15,19 @@ import { HousingService } from "../housing.service";
   template: `
     <section>
       <form>
-        <input type="text" placeholder="Filter by city" />
-        <button class="primary" type="button">Search</button>
+        <input type="text" placeholder="Filter by city or state" #filter />
+        <button
+          class="primary"
+          type="button"
+          (click)="filterResults(filter.value)"
+        >
+          Search
+        </button>
       </form>
     </section>
     <section class="results">
       <app-housing-location
-        *ngFor="let housingLocation of housingLocationList"
+        *ngFor="let housingLocation of filteredLocationList"
         [housingLocation]="housingLocation"
       ></app-housing-location>
     </section>
@@ -29,11 +37,25 @@ import { HousingService } from "../housing.service";
 export class HomeComponent {
   housingService: HousingService = inject(HousingService);
 
+  filteredLocationList: HousingLocation[] = [];
+  housingLocationList: HousingLocation[] = [];
+
   constructor() {
     this.housingLocationList = this.housingService.getAllHousingLocations();
+    this.filteredLocationList = this.housingLocationList;
   }
 
-  readonly baseUrl = "https://angular.dev/assets/images/tutorials/common";
+  filterResults(text: string) {
+    if (!text) {
+      this.filteredLocationList = this.housingLocationList;
+      return;
+    }
 
-  housingLocationList: HousingLocation[] = [];
+    /** Use String filter function to compare the value of text parameter against housingLocation.city property. */
+    this.filteredLocationList = this.housingLocationList.filter(
+      (housingLocation) =>
+        housingLocation?.city.toLowerCase().includes(text.toLowerCase()) ||
+        housingLocation?.state.toLowerCase().includes(text.toLowerCase())
+    );
+  }
 }
